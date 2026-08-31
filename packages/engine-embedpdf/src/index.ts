@@ -22,7 +22,7 @@ export function mountEmbedPdfViewer(
     type: "container",
     target,
     src: sourceUrl,
-    theme: { preference: "system" },
+    theme: { preference: "light" },
   });
   if (!instance) throw new Error("EmbedPDF could not initialize.");
 
@@ -72,3 +72,4 @@ export function mountEmbedPdfViewer(
 }
 
 export { EmbedPdfCriticalOperations } from "./critical-operations.js";
+

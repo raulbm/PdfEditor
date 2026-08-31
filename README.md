@@ -66,3 +66,17 @@ La base reutilizable y las operaciones principales están implementadas y compil
 ## Licencia del proyecto
 
 MIT. Consulte [`LICENSE`](LICENSE). La licencia cubre el código propio de este repositorio; las dependencias conservan sus propias licencias.
+
+## Conectar OCR/LiteParse
+
+El SDK no ejecuta el CLI `lit` dentro del navegador. Para usar los botones OCR, el host debe exponer un proveedor compatible (normalmente una API propia que ejecute LiteParse) y asignarlo antes de cargar el documento:
+
+```ts
+import { HttpExtractionProvider } from "@enterprise-pdf-editor/extraction-client";
+
+window.pdfExtractionProvider = new HttpExtractionProvider({
+  baseUrl: "/api/extraction",
+});
+```
+
+La API debe implementar `POST /jobs`, `GET /jobs/:id` y `DELETE /jobs/:id`. Si no existe `window.pdfExtractionProvider`, la UI informa claramente que LiteParse requiere configuración.

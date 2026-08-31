@@ -73,12 +73,14 @@ document.querySelectorAll<HTMLButtonElement>("[data-operation]").forEach((button
     if (op === "bookmarks") return mutate("Bookmarks", (e) => e.setBookmarks([{ title: "Inicio", pageIndex: 0 }, { title: "Contenido", pageIndex: Math.min(1, e.pageCount() - 1) }]));
     if (op === "inspect") { try { const ops = editor.getOperations?.(); const [annotations, links, attachments] = await Promise.all([ops.listAnnotations(), ops.listLinks(), ops.listAttachments()]); status.textContent = `Elementos: ${annotations.length} anotaciones · ${links.length} enlaces · ${attachments.length} adjuntos`; } catch (error) { status.textContent = `Inspección no disponible: ${error instanceof Error ? error.message : String(error)}`; } return; }
     if (op === "remove-attachment") { try { const ops = editor.getOperations?.(); const attachments = await ops.listAttachments(); if (!attachments.length) { status.textContent = "No hay adjuntos para eliminar"; return; } await ops.removeAttachment(attachments[0].id); status.textContent = `Adjunto eliminado: ${attachments[0].name} · usa Guardar copia`; } catch (error) { status.textContent = `Eliminación no disponible: ${error instanceof Error ? error.message : String(error)}`; } return; }
-    if (op === "split") { try { const e = await structuralPdfEngine.open(currentContent); const parts = await e.split([{ start: 0, end: 0 }, { start: 1, end: e.pageCount() - 1 }]); status.textContent = `PDF dividido en ${parts.length} documentos`; } catch (error) { status.textContent = `División no disponible: ${error instanceof Error ? error.message : String(error)}`; } return; }
+    if (op === "split") { try { const e = await structuralPdfEngine.open(currentContent); const parts = await e.split([{ start: 0, end: 0 }, { start: 1, end: e.pageCount() - 1 }]); parts.forEach((part, index) => { const url = URL.createObjectURL(new Blob([new Uint8Array(part).buffer as ArrayBuffer], { type: "application/pdf" })); const link = document.createElement("a"); link.href = url; link.download = `demo-part-${index + 1}.pdf`; link.click(); URL.revokeObjectURL(url); }); status.textContent = `PDF dividido en ${parts.length} documentos descargados`; } catch (error) { status.textContent = `División no disponible: ${error instanceof Error ? error.message : String(error)}`; } return; }
+    if (op === "merge") return mutate("Unión", (e) => e.merge([currentContent]));
     if (op === "compress") return mutate("Compresión", async (e) => { await e.save({ compressed: true }); });
     if (op === "reorder") return mutate("Reordenación", (e) => e.reorderPages([1, 0, ...Array.from({ length: Math.max(0, e.pageCount() - 2) }, (_, i) => i + 2)]));
     if (op === "delete") return mutate("Eliminación", (e) => e.removePages([e.pageCount() - 1]));
     if (op === "rotate-many") return mutate("Rotación múltiple", (e) => e.rotatePages(Array.from({ length: e.pageCount() }, (_, i) => i), 90));
     if (op === "duplicate") return mutate("Duplicación", (e) => e.duplicatePages([0]));
+    if (op === "extract-text" || op === "extract-ocr" || op === "extract-json") { const mode = op === "extract-ocr" ? "force" : op === "extract-json" ? "json" : "never"; const provider = (window as Window & { pdfExtractionProvider?: { start: (request: any) => Promise<any> } }).pdfExtractionProvider; if (!provider) { status.textContent = `LiteParse (${mode}) requiere configurar window.pdfExtractionProvider`; editor.dispatchEvent(new CustomEvent("pdf-extraction-provider-required", { detail: { mode }, bubbles: true, composed: true })); return; } editor.dispatchEvent(new CustomEvent("pdf-extraction-requested", { detail: { mode, provider }, bubbles: true, composed: true })); status.textContent = `Solicitud LiteParse (${mode}) enviada al proveedor`; return; }
     if (op === "save") return editor.requestSave?.("saveAs");
   });
 });
@@ -93,6 +95,9 @@ if (signatureContext) { signatureContext.lineWidth = 3; signatureContext.strokeS
 document.querySelector("#apply-signature")?.addEventListener("click", async () => { const blob = await new Promise<Blob | null>((resolve) => signatureCanvas.toBlob(resolve, "image/png")); if (!blob) return; await mutate("Firma manuscrita visual", async (e) => e.insertImage(new Uint8Array(await blob.arrayBuffer()), 0, { x: 48, y: 580, width: 180, height: 50 }, "image/png")); });
 
 load(await createDemoPdf());
+
+
+
 
 
 

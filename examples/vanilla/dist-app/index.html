@@ -1,42 +1,14 @@
 <!doctype html>
 <html lang="es">
-  <head><meta charset="UTF-8" /><link rel="icon" href="data:," /><title>PDF Editor SDK — Vanilla</title>  <script type="module" crossorigin src="/assets/index-C7F9t5PE.js"></script>
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="icon" href="data:,"/><title>Enterprise PDF Editor</title>  <script type="module" crossorigin src="/assets/index-CauB4tTf.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DePAMvCJ.css">
 </head>
-  <body>
-    <h1>PDF Editor SDK</h1>
-    <p id="status">Preparando documento…</p>
-    <div id="structural-toolbar" aria-label="Operaciones estructurales">
-      <button data-operation="watermark" type="button">Marca de agua</button>
-      <button data-operation="numbering" type="button">Numerar páginas</button>
-      <button data-operation="rotate" type="button">Rotar página 1</button>
-      <button data-operation="blank" type="button">Insertar página</button>
-      <button data-operation="annotate" type="button">Añadir anotación</button>
-      <button data-operation="redact" type="button">Censurar texto</button>
-      <button data-operation="attachment" type="button">Adjuntar evidencia</button>
-      <button data-operation="link" type="button">Añadir enlace</button>
-      <button data-operation="forms" type="button">Inspeccionar formularios</button>
-      <button data-operation="image" type="button">Insertar imagen</button>
-      <button data-operation="header" type="button">Encabezado y pie</button>
-      <button data-operation="bookmarks" type="button">Crear bookmarks</button>
-      <button data-operation="inspect" type="button">Inspeccionar elementos</button>
-      <button data-operation="remove-attachment" type="button">Eliminar primer adjunto</button>
-      <button data-operation="split" type="button">Dividir PDF</button>
-      <button data-operation="compress" type="button">Comprimir PDF</button>
-      <button data-operation="reorder" type="button">Mover páginas</button>
-      <button data-operation="delete" type="button">Eliminar última página</button>
-      <button data-operation="rotate-many" type="button">Rotar varias páginas</button>
-      <button data-operation="duplicate" type="button">Duplicar página</button>
-      <button data-operation="save" type="button">Guardar copia</button>
-    </div>
-    <canvas id="signature" width="320" height="90" aria-label="Firma manuscrita"></canvas>
-    <button id="apply-signature" type="button">Insertar firma manuscrita</button>
-    <enterprise-pdf-editor id="editor"></enterprise-pdf-editor>
-  </body>
-</html>
-
-
-
-
-
-
-
+<body><div class="app-shell">
+<header class="topbar"><div class="brand"><span class="brand-mark">P</span><div><strong>Enterprise PDF</strong><small>Editor SDK · PoC</small></div></div><div class="topbar-actions"><span class="status-dot"></span><span>Local workspace</span><button data-operation="save" class="primary" type="button">Guardar copia</button></div></header>
+<div class="workspace"><aside class="sidebar"><div class="sidebar-heading"><span>SDK workspace</span><span class="kbd">⌘ K</span></div>
+<details open><summary><span class="summary-icon">▦</span> Documento</summary><div class="tool-grid"><button data-operation="split" type="button">✂ <span>Dividir</span></button><button data-operation="merge" type="button">⊕ <span>Unir</span></button><button data-operation="compress" type="button">◌ <span>Comprimir</span></button><button data-operation="reorder" type="button">⇅ <span>Mover</span></button><button data-operation="delete" type="button">⌫ <span>Eliminar</span></button><button data-operation="rotate-many" type="button">↻ <span>Rotar</span></button><button data-operation="duplicate" type="button">＋ <span>Duplicar</span></button><button data-operation="blank" type="button">□ <span>Insertar</span></button></div></details>
+<details open><summary><span class="summary-icon">✦</span> PDF estructural</summary><div class="tool-list"><button data-operation="header" type="button">Encabezado y pie <span>›</span></button><button data-operation="bookmarks" type="button">Bookmarks <span>›</span></button><button data-operation="image" type="button">Insertar imagen <span>›</span></button><button data-operation="attachment" type="button">Adjuntar archivo <span>›</span></button></div></details>
+<details open><summary><span class="summary-icon">⌁</span> OCR / LiteParse</summary><div class="tool-list"><button data-operation="extract-text" type="button">Extraer texto <span>›</span></button><button data-operation="extract-ocr" type="button">Extraer con OCR <span>›</span></button><button data-operation="extract-json" type="button">JSON espacial <span>›</span></button></div><p class="hint">El host conecta el proveedor LiteParse; las operaciones PDF en memoria no salen por HTTP.</p></details>
+<details><summary><span class="summary-icon">✓</span> Estado</summary><div class="tool-list"><button data-operation="forms" type="button">Inspeccionar formularios <span>›</span></button><button data-operation="inspect" type="button">Inspeccionar elementos <span>›</span></button></div></details>
+<div class="sidebar-footer"><span class="avatar">RB</span><div><strong>Demo workspace</strong><small>EmbedPDF + Structural Engine</small></div></div></aside>
+<main class="canvas-area"><div class="document-toolbar"><div><span class="eyebrow">DOCUMENTO ACTIVO</span><h1>demo.pdf</h1></div><div class="toolbar-meta"><span id="status">Preparando documento…</span><button class="icon-button" type="button">•••</button></div></div><section class="viewer-card"><enterprise-pdf-editor id="editor"></enterprise-pdf-editor></section><section class="signature-card"><div><span class="eyebrow">FIRMA VISUAL</span><h2>Añade una firma manuscrita</h2><p>Se incrusta como imagen; no es firma digital criptográfica.</p></div><div class="signature-actions"><canvas id="signature" width="320" height="90" aria-label="Firma manuscrita"></canvas><button id="apply-signature" class="secondary" type="button">Insertar firma</button></div></section></main></div></div></body></html>
