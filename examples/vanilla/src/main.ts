@@ -23,6 +23,8 @@ async function createDemoPdf(): Promise<Blob> {
   const font = await pdf.embedFont(StandardFonts.Helvetica);
   page.drawText("PDF Editor SDK — Vanilla", { x: 48, y: 780, size: 22, font, color: rgb(0.1, 0.2, 0.4) });
   page.drawText("Documento utilizado por el ejemplo reutilizable", { x: 48, y: 748, size: 12, font });
+  const second = pdf.addPage([595, 842]);
+  second.drawText("Segunda página", { x: 48, y: 780, size: 18, font });
   return blobFromBytes(await pdf.save());
 }
 
@@ -68,9 +70,15 @@ document.querySelectorAll<HTMLButtonElement>("[data-operation]").forEach((button
     if (op === "forms") { try { const fields = await editor.getOperations?.().then((ops: any) => ops.listFormFields()); status.textContent = `Campos AcroForm detectados: ${fields?.length ?? 0}`; } catch (error) { status.textContent = `Formularios no disponibles: ${error instanceof Error ? error.message : String(error)}`; } return; }
     if (op === "image") return mutate("Imagen", async (e) => { const pixel = Uint8Array.from(atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="), (c) => c.charCodeAt(0)); await e.insertImage(pixel, 0, { x: 480, y: 700, width: 48, height: 48 }, "image/png"); });
     if (op === "header") return mutate("Encabezado y pie", (e) => e.addHeaderFooter("Enterprise PDF Editor", "Página {page}"));
-    if (op === "bookmarks") return mutate("Bookmarks", (e) => e.setBookmarks([{ title: "Inicio", pageIndex: 0 }, { title: "Contenido", pageIndex: Math.min(1, e.pageCount - 1) }]));
+    if (op === "bookmarks") return mutate("Bookmarks", (e) => e.setBookmarks([{ title: "Inicio", pageIndex: 0 }, { title: "Contenido", pageIndex: Math.min(1, e.pageCount() - 1) }]));
     if (op === "inspect") { try { const ops = editor.getOperations?.(); const [annotations, links, attachments] = await Promise.all([ops.listAnnotations(), ops.listLinks(), ops.listAttachments()]); status.textContent = `Elementos: ${annotations.length} anotaciones · ${links.length} enlaces · ${attachments.length} adjuntos`; } catch (error) { status.textContent = `Inspección no disponible: ${error instanceof Error ? error.message : String(error)}`; } return; }
     if (op === "remove-attachment") { try { const ops = editor.getOperations?.(); const attachments = await ops.listAttachments(); if (!attachments.length) { status.textContent = "No hay adjuntos para eliminar"; return; } await ops.removeAttachment(attachments[0].id); status.textContent = `Adjunto eliminado: ${attachments[0].name} · usa Guardar copia`; } catch (error) { status.textContent = `Eliminación no disponible: ${error instanceof Error ? error.message : String(error)}`; } return; }
+    if (op === "split") { try { const e = await structuralPdfEngine.open(currentContent); const parts = await e.split([{ start: 0, end: 0 }, { start: 1, end: e.pageCount() - 1 }]); status.textContent = `PDF dividido en ${parts.length} documentos`; } catch (error) { status.textContent = `División no disponible: ${error instanceof Error ? error.message : String(error)}`; } return; }
+    if (op === "compress") return mutate("Compresión", async (e) => { await e.save({ compressed: true }); });
+    if (op === "reorder") return mutate("Reordenación", (e) => e.reorderPages([1, 0, ...Array.from({ length: Math.max(0, e.pageCount() - 2) }, (_, i) => i + 2)]));
+    if (op === "delete") return mutate("Eliminación", (e) => e.removePages([e.pageCount() - 1]));
+    if (op === "rotate-many") return mutate("Rotación múltiple", (e) => e.rotatePages(Array.from({ length: e.pageCount() }, (_, i) => i), 90));
+    if (op === "duplicate") return mutate("Duplicación", (e) => e.duplicatePages([0]));
     if (op === "save") return editor.requestSave?.("saveAs");
   });
 });
@@ -85,6 +93,8 @@ if (signatureContext) { signatureContext.lineWidth = 3; signatureContext.strokeS
 document.querySelector("#apply-signature")?.addEventListener("click", async () => { const blob = await new Promise<Blob | null>((resolve) => signatureCanvas.toBlob(resolve, "image/png")); if (!blob) return; await mutate("Firma manuscrita visual", async (e) => e.insertImage(new Uint8Array(await blob.arrayBuffer()), 0, { x: 48, y: 580, width: 180, height: 50 }, "image/png")); });
 
 load(await createDemoPdf());
+
+
 
 
 

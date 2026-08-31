@@ -19,6 +19,12 @@
       <button data-operation="bookmarks" type="button">Crear bookmarks</button>
       <button data-operation="inspect" type="button">Inspeccionar elementos</button>
       <button data-operation="remove-attachment" type="button">Eliminar primer adjunto</button>
+      <button data-operation="split" type="button">Dividir PDF</button>
+      <button data-operation="compress" type="button">Comprimir PDF</button>
+      <button data-operation="reorder" type="button">Mover páginas</button>
+      <button data-operation="delete" type="button">Eliminar última página</button>
+      <button data-operation="rotate-many" type="button">Rotar varias páginas</button>
+      <button data-operation="duplicate" type="button">Duplicar página</button>
     </div>
     <canvas id="signature" width="320" height="90" aria-label="Firma manuscrita"></canvas>
     <button id="apply-signature" type="button">Insertar firma manuscrita</button>
@@ -60,12 +66,22 @@
         if (op === "forms") return editor.getOperations().then((ops) => ops.listFormFields()).then((fields) => { status.textContent = `Campos AcroForm detectados: ${fields.length}`; }).catch((error) => { status.textContent = `Formularios no disponibles: ${error.message}`; });
         if (op === "image") return applyStructural("Imagen", async (e) => { const pixel = Uint8Array.from(atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="), (c) => c.charCodeAt(0)); await e.insertImage(pixel, 0, { x: 480, y: 700, width: 48, height: 48 }, "image/png"); });
         if (op === "header") return applyStructural("Encabezado y pie", (e) => e.addHeaderFooter("Enterprise PDF Editor", "Página {page}"));
-        if (op === "bookmarks") return applyStructural("Bookmarks", (e) => e.setBookmarks([{ title: "Inicio", pageIndex: 0 }, { title: "Contenido", pageIndex: Math.min(1, e.pageCount - 1) }]));
+        if (op === "bookmarks") return applyStructural("Bookmarks", (e) => e.setBookmarks([{ title: "Inicio", pageIndex: 0 }, { title: "Contenido", pageIndex: Math.min(1, e.pageCount() - 1) }]));
         if (op === "inspect") return editor.getOperations().then(async (ops) => { const [annotations, links, attachments] = await Promise.all([ops.listAnnotations(), ops.listLinks(), ops.listAttachments()]); status.textContent = `Elementos: ${annotations.length} anotaciones · ${links.length} enlaces · ${attachments.length} adjuntos`; }).catch((error) => { status.textContent = `Inspección no disponible: ${error.message}`; });
         if (op === "remove-attachment") return editor.getOperations().then(async (ops) => { const attachments = await ops.listAttachments(); if (!attachments.length) { status.textContent = "No hay adjuntos para eliminar"; return; } await ops.removeAttachment(attachments[0].id); status.textContent = `Adjunto eliminado: ${attachments[0].name} · pulsa Guardar`; }).catch((error) => { status.textContent = `Eliminación no disponible: ${error.message}`; });
+        if (op === "split") return structuralPdfEngine.open(currentContent).then((e) => e.split([{ start: 0, end: 0 }, { start: 1, end: e.pageCount() - 1 }])).then((parts) => { status.textContent = `PDF dividido en ${parts.length} documentos`; }).catch((error) => { status.textContent = `División no disponible: ${error.message}`; });
+        if (op === "compress") return applyStructural("Compresión", async (e) => { await e.save({ compressed: true }); });
+        if (op === "reorder") return applyStructural("Reordenación", (e) => e.reorderPages([1, 0, ...Array.from({ length: Math.max(0, e.pageCount() - 2) }, (_, i) => i + 2)]));
+        if (op === "delete") return applyStructural("Eliminación", (e) => e.removePages([e.pageCount() - 1]));
+        if (op === "rotate-many") return applyStructural("Rotación múltiple", (e) => e.rotatePages(Array.from({ length: e.pageCount() }, (_, i) => i), 90));
+        if (op === "duplicate") return applyStructural("Duplicación", (e) => e.duplicatePages([0]));
         if (op === "redact") return editor.getOperations().then(async (ops) => { await ops.markRedaction({ id: crypto.randomUUID(), pageIndex: 0, rect: { origin: { x: 48, y: 700 }, size: { width: 220, height: 28 } }, text: "PDF Editor SDK" }); const result = await ops.commitRedactions(); status.textContent = result.committed ? "Censura aplicada irreversiblemente · pulsa Guardar" : "Censura pendiente"; }).catch((error) => { status.textContent = `Censura no disponible: ${error.message}`; });
       }));
-      const signatureCanvas = document.querySelector("#signature");\n      const signatureContext = signatureCanvas.getContext("2d");\n      signatureContext.lineWidth = 3; signatureContext.strokeStyle = "#173b70"; signatureContext.beginPath(); signatureContext.moveTo(20, 60); signatureContext.bezierCurveTo(80, 10, 130, 85, 210, 35); signatureContext.stroke(); signatureContext.font = "16px sans-serif"; signatureContext.fillText("Firma demo", 220, 70);\n      document.querySelector("#apply-signature").addEventListener("click", async () => { const blob = await new Promise((resolve) => signatureCanvas.toBlob(resolve, "image/png")); if (!blob) return; await applyStructural("Firma manuscrita visual", async (e) => e.insertImage(new Uint8Array(await blob.arrayBuffer()), 0, { x: 48, y: 580, width: 180, height: 50 }, "image/png")); });\n      editor.persistenceProvider = {
+      const signatureCanvas = document.querySelector("#signature");
+      const signatureContext = signatureCanvas.getContext("2d");
+      signatureContext.lineWidth = 3; signatureContext.strokeStyle = "#173b70"; signatureContext.beginPath(); signatureContext.moveTo(20, 60); signatureContext.bezierCurveTo(80, 10, 130, 85, 210, 35); signatureContext.stroke(); signatureContext.font = "16px sans-serif"; signatureContext.fillText("Firma demo", 220, 70);
+      document.querySelector("#apply-signature").addEventListener("click", async () => { const blob = await new Promise((resolve) => signatureCanvas.toBlob(resolve, "image/png")); if (!blob) return; await applyStructural("Firma manuscrita visual", async (e) => e.insertImage(new Uint8Array(await blob.arrayBuffer()), 0, { x: 48, y: 580, width: 180, height: 50 }, "image/png")); });
+      editor.persistenceProvider = {
         async save(request) {
           savedContent = request.content;
           status.textContent = `Guardado ${request.content.size} bytes · SHA-256 ${request.sha256.slice(0, 12)}…`;
@@ -92,6 +108,9 @@
     </script>
   </body>
 </html>
+
+
+
 
 
 
