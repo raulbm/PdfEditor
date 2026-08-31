@@ -1,0 +1,24 @@
+{
+  "name": "@enterprise-pdf-editor/web-component",
+  "version": "0.1.0",
+  "description": "Framework-agnostic Web Component for the PDF editor SDK",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@enterprise-pdf-editor/core": "0.1.0",
+    "@enterprise-pdf-editor/engine-embedpdf": "0.1.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && vite build",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@enterprise-pdf-editor/engine-embedpdf",
+  "version": "0.1.0",
+  "description": "EmbedPDF adapter for the PDF editor SDK",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@embedpdf/snippet": "2.15.0",
+    "@enterprise-pdf-editor/core": "0.1.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "license": "MIT"
+}

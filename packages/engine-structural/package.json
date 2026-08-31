@@ -1,0 +1,24 @@
+{
+  "name": "@enterprise-pdf-editor/engine-structural",
+  "version": "0.1.0",
+  "description": "Structural PDF mutation adapter for the PDF editor SDK",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@enterprise-pdf-editor/core": "0.1.0",
+    "pdf-lib": "^1.17.1"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && vite build --config vite.browser.config.js",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@enterprise-pdf-editor/extraction-client",
+  "version": "0.1.0",
+  "description": "Optional LiteParse/OCR extraction provider client",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@enterprise-pdf-editor/core": "0.1.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "license": "MIT"
+}

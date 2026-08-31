@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8" /><link rel="icon" href="data:," /><title>PDF Editor SDK — Vanilla</title>  <script type="module" crossorigin src="/assets/index-DOcHIeae.js"></script>
+</head>
+  <body>
+    <h1>PDF Editor SDK</h1>
+    <p id="status">Preparando documento…</p>
+    <div id="structural-toolbar" aria-label="Operaciones estructurales">
+      <button data-operation="watermark" type="button">Marca de agua</button>
+      <button data-operation="numbering" type="button">Numerar páginas</button>
+      <button data-operation="rotate" type="button">Rotar página 1</button>
+      <button data-operation="blank" type="button">Insertar página</button>
+      <button data-operation="annotate" type="button">Añadir anotación</button>
+      <button data-operation="redact" type="button">Censurar texto</button>
+      <button data-operation="attachment" type="button">Adjuntar evidencia</button>
+      <button data-operation="link" type="button">Añadir enlace</button>
+      <button data-operation="forms" type="button">Inspeccionar formularios</button>
+      <button data-operation="image" type="button">Insertar imagen</button>
+      <button data-operation="header" type="button">Encabezado y pie</button>
+      <button data-operation="bookmarks" type="button">Crear bookmarks</button>
+      <button data-operation="inspect" type="button">Inspeccionar elementos</button>
+      <button data-operation="remove-attachment" type="button">Eliminar primer adjunto</button>
+      <button data-operation="save" type="button">Guardar copia</button>
+    </div>
+    <canvas id="signature" width="320" height="90" aria-label="Firma manuscrita"></canvas>
+    <button id="apply-signature" type="button">Insertar firma manuscrita</button>
+    <enterprise-pdf-editor id="editor"></enterprise-pdf-editor>
+  </body>
+</html>
+
+
+
+
+
+

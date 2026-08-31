@@ -1,0 +1,16 @@
+{
+  "name": "@enterprise-pdf-editor/example-vanilla",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@enterprise-pdf-editor/web-component": "0.1.0",
+    "@enterprise-pdf-editor/engine-structural": "0.1.0",
+    "pdf-lib": "^1.17.1"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && vite build",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "license": "MIT"
+}
